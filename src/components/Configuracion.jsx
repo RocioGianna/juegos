@@ -20,19 +20,6 @@ export const ConfiguracionStyle = styled.div`
   background-color: rgba(195, 197, 201, 0.69);
   padding: 10px;
 
-  
-  & button{
-    border: none;
-    background: none;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 10px;
-  }
-
-  & button:hover{
-    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-  }
-
   `;
 
 export default function Configuracion() {
@@ -118,7 +105,6 @@ export default function Configuracion() {
             <Timer />
 
             <p>{tablero.flags} <FlagIcon fontSize="small"/></p>
-                 
 
             <RoundButton onClick={()=>{gameState.start ? dispatch({type: "STOP"}) : dispatch({type: "START"})}}>
                 {!gameState.start && <PlayArrowIcon fontSize="small" />}

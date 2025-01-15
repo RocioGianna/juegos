@@ -78,7 +78,7 @@ export default function Tablero() {
                 cellState: updatedCellState,
         }});
 
-        winModal();
+        winModal(updatedCellState);
         
     }
 
@@ -117,28 +117,21 @@ export default function Tablero() {
             }})
     };
 
-    const winModal = () =>{
-        let cont = (tablero.size * tablero.size) - tablero.minas;
+    const winModal = (updatedCellState) =>{
+        let cont = 0;
+
         for(let i=0; i<MAX_SIZE; i++) {
             for(let j=0; j<MAX_SIZE; j++){
-                console.log(cont);
-                if(cont == 0){
-                    restartStateDispatcher({type: "WIN"});
-                    dispatch({ type: "STOP"});
-                    return
-                }
-
-                if (tablero.cellState[i][j].clicked && tablero.gameBoard[i][j] === -1){
-                    return
-                }
-                if(tablero.cellState[i][j].clicked && tablero.gameBoard[i][j] !== -1){
-                    cont--;
+                if(!updatedCellState[i][j].clicked){
+                    cont++;
                 }
             }
+        }        
+        console.log(cont);
+        if(cont === tablero.minas){
+            restartStateDispatcher({type: "WIN"});            
+            dispatch({ type: "STOP"});
         }
-        //restartStateDispatcher({type: "WIN"});
-        //dispatch({ type: "STOP"});
-        
     };
 
     const handleClassName = (celda, i, j)=>{ 

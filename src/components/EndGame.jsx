@@ -13,6 +13,5 @@ export const Text = styled.h1`
 export default function EndGame({children, ...props}){
     return (
         <Text {...props}>{children}</Text>
-
     );
 }
