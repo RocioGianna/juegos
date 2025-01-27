@@ -6,8 +6,8 @@ import VentanaContext from "./BuscaminasContext";
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import RoundButton from "./compartidos/RoundButton";
-import Select from "./compartidos/Select";
+import RoundButton from "../compartidos/RoundButton";
+import Select from "../compartidos/Select";
 import FlagIcon from '@mui/icons-material/Flag';
 
 export const ConfiguracionStyle = styled.div`

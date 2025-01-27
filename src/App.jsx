@@ -1,29 +1,60 @@
 import './App.css'
-import Configuracion from './components/Configuracion';
-import Tablero from './components/Tablero';
-import { BuscaminasProvider } from './components/BuscaminasContext';
-import styled from "styled-components";
+import { createBrowserRouter, RouterProvider} from 'react-router-dom';
+import BuscaminasPage from './pages/BuscaminasPage';
+import Perfil from './pages/Perfil';
+import JuegosList from './components/Home/JuegosList';
+import Layout from './pages/Layout';
+import Home from './components/Home/Home';
+import PrivateLayout from './pages/PrivateLayout';
+import LoginInput from './components/Home/LoginInput';
+import NotFoundPage from './pages/NotFoundPage';
 
-export const BuscaminasStyle = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  border: 1px solid black;
-  border-radius: 15px;
-  background-color: white;
-  height: 80vh;  
-`;
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "/login",
+        element: <LoginInput />,
+      },
+      {
+        path: "/logout",
+        element: <Home />,
+      },
+      {
+        path: "/",
+        element: <PrivateLayout />,
+        children: [
+          {
+            path: "/perfil",
+            element: <Perfil />,
+          },
+          {
+            path: "/juegos",
+            element: <JuegosList />,
+          },
+          {
+            path: "/juegos/buscaminas",
+            element: <BuscaminasPage />,
+          },
+        ],
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
+      },
+    ],
+  },
+]);
 function App() {
   return (
-    <BuscaminasProvider>
-      <BuscaminasStyle>
-        <Configuracion />
-        <Tablero />
-      </BuscaminasStyle>
-    </BuscaminasProvider>
+    <RouterProvider router={router} />
   );
 }
 

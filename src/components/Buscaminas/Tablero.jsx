@@ -2,9 +2,11 @@ import { useContext, useEffect } from "react";
 import Celda from "./Celda";
 import VentanaContext from "./BuscaminasContext";
 import styled from "styled-components";
-import IconoBomba from "./compartidos/IconoBomba";
-import Text from "./EndGame";
+import IconoBomba from "../compartidos/IconoBomba";
+import Text from "../compartidos/EndGame";
 import FlagIcon from '@mui/icons-material/Flag';
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export const TableroContainer = styled.div`
   aspect-ratio: 1 / 1;
@@ -20,40 +22,71 @@ export const TableroContainer = styled.div`
 export default function Tablero() {
     const {gameState, dispatch, tablero, setTableroDispatch, restartState, restartStateDispatcher} = useContext(VentanaContext);
     const MAX_SIZE = tablero.size;
+    const token = useSelector((state)=> state.auth.token);
+    const navigate = useNavigate();
 
-    const colocarMinas = (numMinas) => {
-        let board = Array.from({ length: MAX_SIZE }, () => Array(MAX_SIZE).fill(0));
-        let minasColocadas = 0;
-        while (minasColocadas < numMinas) {
-          const fila = Math.floor(Math.random() * (MAX_SIZE -1));
-          const columna = Math.floor(Math.random() * (MAX_SIZE -1));
-          if (board[fila][columna] !== -1) {
-              board[fila][columna] = -1; 
-              tablero.cellState[fila][columna].mina = true;
-              setCantidadBombasSector(board, fila, columna);
-              minasColocadas++;
-            }
+    // const colocarMinas = (numMinas) => {
+    //     let board = Array.from({ length: MAX_SIZE }, () => Array(MAX_SIZE).fill(0));
+    //     let minasColocadas = 0;
+    //     while (minasColocadas < numMinas) {
+    //       const fila = Math.floor(Math.random() * (MAX_SIZE -1));
+    //       const columna = Math.floor(Math.random() * (MAX_SIZE -1));
+    //       if (board[fila][columna] !== -1) {
+    //           board[fila][columna] = -1; 
+    //           tablero.cellState[fila][columna].mina = true;
+    //           setCantidadBombasSector(board, fila, columna);
+    //           minasColocadas++;
+    //         }
+    //     }
+    //     return board;
+    //   };
+
+    // function setCantidadBombasSector(board, fila, columna){
+    //     for (let i = fila-1; i <= fila+1; i++) {
+    //         for (let j = columna-1; j <= columna+1; j++) {
+    //             if ((i < MAX_SIZE && i >= 0) && (j < MAX_SIZE && j >= 0) && board[i][j] !== -1){
+    //                 board[i][j] += 1;
+    //             }
+    //         }
+    //     }
+    // }
+
+    const getTableroCargado = async()=>{
+        let response = await fetch('http://localhost:3000/api/tablero',{
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+ token,
+            },
+            body: JSON.stringify({
+                size: MAX_SIZE,
+                numMinas: tablero.minas
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            navigate('/error', { state: { code: response.status, message: "Ocurrio un error al intentar cargar el juego." } });
+            return;
         }
-        return board;
-      };
 
-    function setCantidadBombasSector(board, fila, columna){
-        for (let i = fila-1; i <= fila+1; i++) {
-            for (let j = columna-1; j <= columna+1; j++) {
-                if ((i < MAX_SIZE && i >= 0) && (j < MAX_SIZE && j >= 0) && board[i][j] !== -1){
-                    board[i][j] += 1;
-                }
-            }
-        }
-    }
-
-    useEffect(() => {
         setTableroDispatch({
             type: "UPDATE_TABLERO",
             payload: {
-                gameBoard: colocarMinas(tablero.minas)
+                gameBoard: data.board,
             }
-        })
+        });
+    }
+
+    useEffect(() => {
+        getTableroCargado();
+        // setTableroDispatch({
+        //     type: "UPDATE_TABLERO",
+        //     payload: {
+        //         gameBoard: colocarMinas(tablero.minas)
+        //     }
+        // })
     }, [tablero.minas, tablero.size, tablero.nivel, gameState.restart]);
 
 
@@ -127,7 +160,7 @@ export default function Tablero() {
                 }
             }
         }        
-        console.log(cont);
+
         if(cont === tablero.minas){
             restartStateDispatcher({type: "WIN"});            
             dispatch({ type: "STOP"});
